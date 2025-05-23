@@ -1,41 +1,4 @@
-/** produtos.js */
 
-// Salva produto no localStorage
-document.getElementById('produtoForm')?.addEventListener('submit', function (e) {
-  e.preventDefault();
-
-  const nome = document.getElementById('nome').value;
-  const imagem = document.getElementById('imagem').value;
-  const link = document.getElementById('link').value;
-
-  const produto = { nome, imagem, link };
-
-  let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
-  produtos.push(produto);
-  localStorage.setItem('produtos', JSON.stringify(produtos));
-
-  alert('Produto salvo com sucesso!');
-  this.reset();
-});
-
-// Carrega produtos (em catalogo.html)
-function carregarProdutos(containerId) {
-  const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
-  const container = document.getElementById(containerId);
-
-  produtos.forEach(({ nome, imagem, link }) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <h3>${nome}</h3>
-      ${imagem ? `<img src="${imagem}" alt="${nome}" style="width:100%;height:auto;margin-bottom:10px;">` : ''}
-      <a class="btn" href="${link}" target="_blank">Chamar no WhatsApp</a>
-    `;
-    container.appendChild(card);
-  });
-}
-
-/** index.html */
 
 <!DOCTYPE html>
 <html lang="pt-BR">
