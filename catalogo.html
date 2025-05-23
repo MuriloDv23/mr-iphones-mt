@@ -56,11 +56,43 @@
     <p>Seu iPhone com confiança e garantia</p>
   </header>
 
-  <div class="container">
-    <div class="card">
-      <h3>iPhone 14 - Preto</h3>
-      <a class="btn" href="https://wa.me/5565998032449?text=Ol%C3%A1%2C%20tenho%20interesse%20no%20iPhone%2014%20Preto.%20Poderia%20me%20passar%20mais%20informa%C3%A7%C3%B5es%3F">Chamar no WhatsApp</a>
-    </div>
+  <div class="container" id="produtos">
+    <!-- Os produtos vão ser carregados aqui automaticamente via Firebase -->
   </div>
+
+  <script type="module">
+    // Configuração do Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_BUCKET.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function carregarProdutos() {
+      const querySnapshot = await getDocs(collection(db, "produtos"));
+      const container = document.getElementById("produtos");
+      querySnapshot.forEach((doc) => {
+        const produto = doc.data();
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${produto.nome}</h3>
+          <a class="btn" href="https://wa.me/${produto.whatsapp}?text=${encodeURIComponent(produto.mensagem)}">Chamar no WhatsApp</a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    carregarProdutos();
+  </script>
 </body>
 </html>
