@@ -1,38 +1,121 @@
-/** produtos.js */
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Administrativo - MR iPhones</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: 0 auto 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 260px;
+      padding: 15px;
+      text-align: center;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .btn {
+      background-color: #25D366;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
 
-// Salva produto no localStorage
-document.getElementById('produtoForm')?.addEventListener('submit', function (e) {
-  e.preventDefault();
+  <h1>Painel Administrativo - MR iPhones MT</h1>
 
-  const nome = document.getElementById('nome').value;
-  const imagem = document.getElementById('imagem').value;
-  const link = document.getElementById('link').value;
+  <form id="productForm">
+    <input type="text" id="nome" placeholder="Nome do produto" required />
+    <input type="url" id="link" placeholder="Link do WhatsApp" required />
+    <input type="file" id="imagem" accept="image/*" required />
+    <button type="submit">Adicionar Produto</button>
+  </form>
 
-  const produto = { nome, imagem, link };
+  <div class="container" id="productContainer"></div>
 
-  let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
-  produtos.push(produto);
-  localStorage.setItem('produtos', JSON.stringify(produtos));
+  <script>
+    const form = document.getElementById('productForm');
+    const container = document.getElementById('productContainer');
+    let produtos = JSON.parse(localStorage.getItem('produtos')) || [];
 
-  alert('Produto salvo com sucesso!');
-  this.reset();
-});
+    function renderizarProdutos() {
+      container.innerHTML = '';
+      produtos.forEach((produto, index) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${produto.imagem}" alt="Produto">
+          <h3>${produto.nome}</h3>
+          <a class="btn" href="${produto.link}" target="_blank">Chamar no WhatsApp</a>
+        `;
+        container.appendChild(card);
+      });
+    }
 
-// Carrega produtos (em catalogo.html)
-function carregarProdutos(containerId) {
-  const produtos = JSON.parse(localStorage.getItem('produtos')) || [];
-  const container = document.getElementById(containerId);
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nome = document.getElementById('nome').value;
+      const link = document.getElementById('link').value;
+      const imagemInput = document.getElementById('imagem');
 
-  produtos.forEach(({ nome, imagem, link }) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <h3>${nome}</h3>
-      ${imagem ? `<img src="${imagem}" alt="${nome}" style="width:100%;height:auto;margin-bottom:10px;">` : ''}
-      <a class="btn" href="${link}" target="_blank">Chamar no WhatsApp</a>
-    `;
-    container.appendChild(card);
-  });
-}
+      const reader = new FileReader();
+      reader.onload = function() {
+        const imagem = reader.result;
 
-/** index.html */
+        const novoProduto = { nome, link, imagem };
+        produtos.push(novoProduto);
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+        renderizarProdutos();
+
+        form.reset();
+      };
+      reader.readAsDataURL(imagemInput.files[0]);
+    });
+
+    renderizarProdutos();
+  </script>
+
+</body>
+</html>
