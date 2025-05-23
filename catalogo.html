@@ -1,82 +1,13 @@
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo - MR iPhones</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MR iPhones MT - Catálogo</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      padding: 30px;
-    }
-    h1 {
-      text-align: center;
-    }
-    form {
-      max-width: 400px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px;
-      width: 100%;
-      background: #25D366;
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      border-radius: 5px;
-    }
-  </style>
-</head>
-<body>
-  <h1>Adicionar Produto</h1>
-  <form id="produtoForm">
-    <label for="nome">Nome do Produto:</label>
-    <input type="text" id="nome" required>
-
-    <label for="imagem">URL da Imagem:</label>
-    <input type="text" id="imagem">
-
-    <label for="link">Link do WhatsApp:</label>
-    <input type="text" id="link" required>
-
-    <button type="submit">Salvar Produto</button>
-  </form>
-
-  <script src="produtos.js"></script>
-</body>
-</html>
-
-/** catalogo.html */
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catálogo - MR iPhones MT</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
+      background-color: #f9f9f9;
       color: #333;
       margin: 0;
       padding: 0;
@@ -117,22 +48,53 @@
       text-decoration: none;
       font-weight: bold;
     }
-    img {
-      max-width: 100%;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
-<body onload="carregarProdutos('produtosContainer')">
+<body>
   <header>
     <h1>MR iPhones MT</h1>
     <p>Seu iPhone com confiança e garantia</p>
   </header>
 
-  <div class="container" id="produtosContainer"></div>
+  <div class="container" id="produtos">
+    <!-- Os produtos vão ser carregados aqui automaticamente via Firebase -->
+  </div>
 
-  <script src="produtos.js"></script>
+  <script type="module">
+    // Configuração do Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_DOMINIO.firebaseapp.com",
+      projectId: "SEU_PROJECT_ID",
+      storageBucket: "SEU_BUCKET.appspot.com",
+      messagingSenderId: "SEU_SENDER_ID",
+      appId: "SEU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function carregarProdutos() {
+      const querySnapshot = await getDocs(collection(db, "produtos"));
+      const container = document.getElementById("produtos");
+      querySnapshot.forEach((doc) => {
+        const produto = doc.data();
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${produto.nome}</h3>
+          <a class="btn" href="https://wa.me/${produto.whatsapp}?text=${encodeURIComponent(produto.mensagem)}">Chamar no WhatsApp</a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    carregarProdutos();
+  </script>
 </body>
 </html>
+
 
